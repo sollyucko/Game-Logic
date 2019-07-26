@@ -1,6 +1,7 @@
 package io.github.sollyucko._2048;
 
 import java.util.*;
+import java.util.function.Function;
 
 /**
  * Blank spaces are represented as 0. Spaces should always contain either 0 or a power of 2 not less than 2.
@@ -9,23 +10,62 @@ public class Board {
 	private final int[][] data;
 	private final byte rows;
 	private final byte cols;
-	private final Random random;
-	private long score;
-	private int bestTile;
+	private final Function<Random, Integer> tileSelector;
+	private final Random random = new Random();
+	private long score = 0;
+	private int bestTile = 0;
 	
-	public Board(final byte rows, final byte cols, final short startingTiles) throws GameOverException {
+	public Board() throws GameOverException {
+		this((byte) 4, (byte) 4, (short) 2, random -> random.nextInt(10) == 0 ? 4 : 2);
+	}
+	
+	public Board(final byte rows, final byte cols) throws GameOverException {
+		this(rows, cols, (short) 2, random -> random.nextInt(10) == 0 ? 4 : 2);
+	}
+	
+	public Board(final short numStartingTiles, final Function<Random, Integer> tileSelector) throws GameOverException {
+		this((byte) 4, (byte) 4, numStartingTiles, tileSelector);
+	}
+	
+	public Board(final Function<Random, Integer> tileSelector) throws GameOverException {
+		this((byte) 4, (byte) 4, (short) 2, tileSelector);
+	}
+	
+	public Board(final byte rows, final byte cols, final short numStartingTiles) throws GameOverException {
+		this(rows, cols, numStartingTiles, random -> random.nextInt(10) == 0 ? 4 : 2);
+	}
+	
+	public Board(final byte rows, final byte cols, final Function<Random, Integer> tileSelector) throws GameOverException {
+		this(rows, cols, (short) 2, tileSelector);
+	}
+	
+	public Board(final short numStartingTiles) throws GameOverException {
+		this((byte) 4, (byte) 4, numStartingTiles, random -> random.nextInt(10) == 0 ? 4 : 2);
+	}
+	
+	public Board(final byte rows, final byte cols, final short numStartingTiles,
+	             final Function<Random, Integer> tileSelector) throws GameOverException {
 		this.rows = rows;
 		this.cols = cols;
 		this.data = new int[rows][cols];
-		this.score = 0;
-		this.random = new Random();
-		this.bestTile = 0;
-		for(short i = 0; i < startingTiles; ++i) {
+		this.tileSelector = tileSelector;
+		for(short i = 0; i < numStartingTiles; ++i) {
 			this.addTile();
 		}
 	}
 	
-	private void addTile() throws GameOverException {
+	public Board(final int[][] data) {
+		this(data, random -> random.nextInt(10) == 0 ? 4 : 2);
+	}
+	
+	public Board(final int[][] data, final Function<Random, Integer> tileSelector) {
+		this.rows = (byte) data.length;
+		this.cols = (byte) data[0].length;
+		this.data = data.clone();
+		this.tileSelector = tileSelector;
+	}
+	
+	protected void addTile() throws GameOverException {
 		this.placeTile(this.pickTile());
 	}
 	
@@ -41,7 +81,8 @@ public class Board {
 		return this.score;
 	}
 	
-	private void move(Direction direction) {
+	protected void move(final Direction direction) throws InvalidMoveException {
+		boolean hasChanged = false;
 		switch(direction) {
 			case UP:
 				for(int col = 0; col < this.cols; ++col) {
@@ -57,11 +98,13 @@ public class Board {
 							final int from = this.data[rowFrom][col];
 							if(to == 0) {
 								if(from != 0) {
+									hasChanged = true;
 									this.data[rowTo][col] = from;
 									this.data[rowFrom][col] = 0;
 									break;
 								}
 							} else if(from == to) {
+								hasChanged = true;
 								to += from;
 								this.score += to;
 								this.data[rowTo][col] = to;
@@ -87,11 +130,13 @@ public class Board {
 							final int from = row[colFrom];
 							if(to == 0) {
 								if(from != 0) {
+									hasChanged = true;
 									row[colTo] = from;
 									row[colFrom] = 0;
 									break;
 								}
 							} else if(from == to) {
+								hasChanged = true;
 								to += from;
 								this.score += to;
 								row[colTo] = to;
@@ -117,11 +162,13 @@ public class Board {
 							final int from = this.data[rowFrom][col];
 							if(to == 0) {
 								if(from != 0) {
+									hasChanged = true;
 									this.data[rowTo][col] = from;
 									this.data[rowFrom][col] = 0;
 									break;
 								}
 							} else if(from == to) {
+								hasChanged = true;
 								to += from;
 								this.score += to;
 								this.data[rowTo][col] = to;
@@ -148,11 +195,13 @@ public class Board {
 								final int from = row[colFrom];
 								if(to == 0) {
 									if(from != 0) {
+										hasChanged = true;
 										row[colTo] = from;
 										row[colFrom] = 0;
 										break;
 									}
 								} else if(from == to) {
+									hasChanged = true;
 									to += from;
 									this.score += to;
 									row[colTo] = to;
@@ -166,13 +215,16 @@ public class Board {
 				}
 				break;
 		}
+		if(!hasChanged) {
+			throw new InvalidMoveException();
+		}
 	}
 	
-	private int pickTile() {
-		return this.random.nextInt(10) == 0 ? 4 : 2;
+	protected int pickTile() {
+		return this.tileSelector.apply(this.random);
 	}
 	
-	private void placeTile(int tile) throws GameOverException {
+	protected void placeTile(final int tile) throws GameOverException {
 		final List<int[]> availableCoordinates = new ArrayList<>();
 		for(int row = 0; row < this.rows; ++row) {
 			for(int col = 0; col < this.cols; ++col) {
@@ -189,7 +241,7 @@ public class Board {
 		this.bestTile = Math.max(this.bestTile, tile);
 	}
 	
-	public void tick(final Direction direction) throws GameOverException {
+	public void tick(final Direction direction) throws GameOverException, InvalidMoveException {
 		this.move(direction);
 		this.addTile();
 	}
