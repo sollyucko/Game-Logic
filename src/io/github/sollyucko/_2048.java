@@ -146,8 +146,6 @@ public class _2048 {
 			int prevValue = 0;
 			Coordinate nextAvailableCoord = null;
 			for(final Coordinate coord : (Iterable<Coordinate>) group::iterator) {
-				//				System.out.println(nextAvailableCoord);
-				
 				if(nextAvailableCoord == null) nextAvailableCoord = coord;
 				
 				final int value = this.get(coord);
@@ -169,11 +167,6 @@ public class _2048 {
 						nextAvailableCoord = nextAvailableCoord.minus(direction);
 					}
 				}
-				
-				for(final int[] row : this.getGrid()) {
-					System.out.println(Arrays.toString(row));
-				}
-				System.out.println();
 			}
 		}
 		if(!hasChanged) {
