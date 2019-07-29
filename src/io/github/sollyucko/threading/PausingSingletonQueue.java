@@ -14,9 +14,7 @@ public class PausingSingletonQueue<E> {
 				try {
 					this.lock.notifyAll();
 					this.lock.wait();
-				} catch(final InterruptedException ex) {
-					ex.printStackTrace();
-				}
+				} catch(final InterruptedException ex) {}
 			}
 		}
 	}
@@ -27,9 +25,7 @@ public class PausingSingletonQueue<E> {
 				try {
 					this.lock.notifyAll();
 					this.lock.wait();
-				} catch(final InterruptedException ex) {
-					ex.printStackTrace();
-				}
+				} catch(final InterruptedException ex) {}
 			}
 		}
 	}

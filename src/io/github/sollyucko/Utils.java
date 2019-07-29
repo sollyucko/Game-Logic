@@ -77,7 +77,6 @@ public final class Utils {
 					throw new NoSuchElementException();
 				final T result = combiner.apply(this.aGet(this.j), this.bGet(this.i - this.j));
 				++this.j;
-				System.out.println(result);
 				return result;
 			}
 		};
