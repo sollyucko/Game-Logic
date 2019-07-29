@@ -1,30 +1,31 @@
-package io.github.sollyucko._2048;
+package io.github.sollyucko;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
 import java.util.Random;
 import java.util.function.Function;
 
 import static io.github.sollyucko._2048.Direction.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-class BoardTest {
+class _2048Test {
 	@Test
-	public void testEmptyBoardHasNoValidMove() {
+	void testEmptyBoardHasNoValidMove() {
 		assertDoesNotThrow(() -> {
-			final Board board = new Board((byte) 2, (byte) 3, (short) 0);
-			assertThrows(InvalidMoveException.class, () -> board.tick(UP));
-			assertThrows(InvalidMoveException.class, () -> board.tick(RIGHT));
-			assertThrows(InvalidMoveException.class, () -> board.tick(DOWN));
-			assertThrows(InvalidMoveException.class, () -> board.tick(LEFT));
+			final _2048 board = new _2048((byte) 2, (byte) 3, (short) 0);
+			assertThrows(_2048.InvalidMoveException.class, () -> board.tick(UP));
+			assertThrows(_2048.InvalidMoveException.class, () -> board.tick(RIGHT));
+			assertThrows(_2048.InvalidMoveException.class, () -> board.tick(DOWN));
+			assertThrows(_2048.InvalidMoveException.class, () -> board.tick(LEFT));
 		});
 	}
 	
 	@Test
-	public void testEmptyBoardIsCorrectSizeAndEmpty() {
+	void testEmptyBoardIsCorrectSizeAndEmpty() {
 		assertDoesNotThrow(() -> {
-			final Board board = new Board((byte) 2, (byte) 3, (short) 0);
-			final int[][] data = board.getData();
+			final _2048 board = new _2048((byte) 2, (byte) 3, (short) 0);
+			final int[][] data = board.getGrid();
 			assertEquals(data.length, 2);
 			assertArrayEquals(data[0], new int[]{0, 0, 0});
 			assertArrayEquals(data[1], new int[]{0, 0, 0});
@@ -32,7 +33,7 @@ class BoardTest {
 	}
 	
 	@Test
-	public void testMergeUp() {
+	void testMergeUp() {
 		assertDoesNotThrow(() -> {
 			//@formatter:off
 			final BoardWithoutNewTiles board = new BoardWithoutNewTiles(new int[][]{
@@ -42,8 +43,15 @@ class BoardTest {
 					{0, 2, 0, 2, 0, 2}
 			});
 			//@formatter:on
+			for(final int[] row : board.getGrid()) {
+				System.out.println(Arrays.toString(row));
+			}
+			System.out.println();
 			board.tick(UP);
-			final int[][] data = board.getData();
+			final int[][] data = board.getGrid();
+			for(final int[] row : data) {
+				System.out.println(Arrays.toString(row));
+			}
 			assertEquals(data.length, 4);
 			assertArrayEquals(new int[]{2, 4, 4, 4, 4, 4}, data[0]);
 			assertArrayEquals(new int[]{0, 2, 0, 0, 2, 4}, data[1]);
@@ -52,7 +60,7 @@ class BoardTest {
 		});
 	}
 	
-	public static class BoardWithoutNewTiles extends Board {
+	public static class BoardWithoutNewTiles extends _2048 {
 		public BoardWithoutNewTiles() throws GameOverException {
 			super();
 		}
@@ -86,7 +94,7 @@ class BoardTest {
 			super(rows, cols, numStartingTiles, tileSelector);
 		}
 		
-		public BoardWithoutNewTiles(final int[][] data) {
+		private BoardWithoutNewTiles(final int[][] data) {
 			super(data);
 		}
 		

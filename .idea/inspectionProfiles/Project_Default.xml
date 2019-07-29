@@ -38,8 +38,8 @@
       <option name="ignoreSingleArgument" value="false" />
     </inspection_tool>
     <inspection_tool class="ConditionalExpressionWithIdenticalBranches" enabled="true" level="WARNING" enabled_by_default="true" />
-    <inspection_tool class="ConfusingElse" enabled="true" level="WARNING" enabled_by_default="true">
-      <option name="reportWhenNoStatementFollow" value="true" />
+    <inspection_tool class="ConfusingElse" enabled="true" level="Unused/Redundant" enabled_by_default="true">
+      <option name="reportWhenNoStatementFollow" value="false" />
     </inspection_tool>
     <inspection_tool class="ConfusingMainMethod" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="ConstantConditionIf" enabled="true" level="WARNING" enabled_by_default="true" />
@@ -183,7 +183,7 @@
         <option name="m_maxLength" value="64" />
       </extension>
       <extension name="ClassNamingConvention" enabled="true">
-        <option name="m_regex" value="[A-Z][A-Za-z\d]*" />
+        <option name="m_regex" value="[A-Z][A-Za-z0-9]*|_[0-9][A-Za-z0-9]*" />
         <option name="m_minLength" value="0" />
         <option name="m_maxLength" value="0" />
       </extension>
@@ -384,9 +384,10 @@
     <inspection_tool class="UsePropertyAccessSyntax" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="UseWithIndex" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="WeakerAccess" enabled="true" level="Too Visible" enabled_by_default="true">
-      <option name="SUGGEST_PACKAGE_LOCAL_FOR_MEMBERS" value="true" />
-      <option name="SUGGEST_PACKAGE_LOCAL_FOR_TOP_CLASSES" value="true" />
+      <option name="SUGGEST_PACKAGE_LOCAL_FOR_MEMBERS" value="false" />
+      <option name="SUGGEST_PACKAGE_LOCAL_FOR_TOP_CLASSES" value="false" />
       <option name="SUGGEST_PRIVATE_FOR_INNERS" value="true" />
+      <disabledExtension id="moduleInfo" />
     </inspection_tool>
     <inspection_tool class="WhenWithOnlyElse" enabled="true" level="WARNING" enabled_by_default="true" />
     <inspection_tool class="unused" enabled="true" level="Unused/Redundant" enabled_by_default="true">
